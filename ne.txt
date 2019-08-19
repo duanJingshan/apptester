@@ -1,0 +1,85 @@
+1、通用端口号定义:xxxxx, 1[1位设备号][1位层次号][2位实体号]
+2、各层地址命名规则：LNK地址编号建议为两位：[1位设备号][1位实体号]；NET层和APP层地址建议使用设备号
+3、设备编号从1开始，各层实体编号从0开始
+4、除PHY层外，其余各层参数可由设计者自己增减参数及修改参数名字，参数值
+5、本例为仿真两个在同一PC相连的节点，每个节点只有一个高层，用来测试与物理层模拟软件之间的接口。
+    节点1                        节点2
+  APP层实体0  11400           APP层实体0 12400
+      |                                           |    
+  PHY层实体0  11100           PHY层实体0 12100
+      |                                           |       
+      —————————————
+---------------------------------------------------------
+deviceID = 1
+	layer = PHY
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 11100
+			errorProb = 20
+			bufferSize = 40000
+			apiMode = 1
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 11400
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 12100
+		------------------------------
+	layer = APP
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 5
+			myPort = 11400
+			myAddr = 1
+			lowerIPAddr = 127.0.0.1
+			lowerPort = 11100
+			apiMode = 1
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 0
+			_upperParms = 0
+			_peerNumbers = 0
+			_peerParms = 0
+----------------------------------------------------------
+deviceID = 2
+	layer = PHY
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 12100
+			errorProb = 20
+			bufferSize = 40000
+			apiMode = 1
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 2
+			upperIPAddr = 127.0.0.1
+			upperPort = 12400
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1
+			peerPort = 11100
+		-----------------------------
+	layer = APP
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 5
+			myPort = 12400
+			myAddr = 2
+			lowerIPAddr = 127.0.0.1
+			lowerPort = 12100
+			apiMode = 1
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 0
+			_upperParms = 0
+			_peerNumbers = 0
+			_peerParms = 0
+----------------------------------------------------------
