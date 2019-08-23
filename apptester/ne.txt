@@ -1,14 +1,24 @@
 1、通用端口号定义:xxxxx, 1[1位设备号][1位层次号][2位实体号]
-2、各层地址命名规则：LNK地址编号建议为两位：[1位设备号][1位实体号]；NET层和APP层地址建议使用设备号
+2、各层地址命名规则：LNK地址编号建议为两位：[1位设备号][1位实体号]；NET层和app层地址建议使用设备号
 3、设备编号从1开始，各层实体编号从0开始
-4、除PHY层外，其余各层参数可由设计者自己增减参数及修改参数名字，参数值
+4、除phy层外，其余各层参数可由设计者自己增减参数及修改参数名字，参数值，但是整体结构需要保持：包括每个实体参数的间隔“---”，前缀带下划线的参数“_XX"都要保留，变量名中不要出现dev……，lay……，enti……等关键词，避免软件误判。
 5、本例为仿真两个在同一PC相连的节点，每个节点只有一个高层，用来测试与物理层模拟软件之间的接口。
-    节点1                        节点2
-  APP层实体0  11400           APP层实体0 12400
-      |                                           |    
-  PHY层实体0  11100           PHY层实体0 12100
-      |                                           |       
-      —————————————
+6、layOut参数表示布局的编号，比如2，表示采用两个节点的布局编号。每个布局，各节点都有不同的定位，同一结点的物理层不同实体，在定位的基础上进行偏移
+7、workMode目前有两位数设置，十位设定发送的方法，0表示等待键盘输入，1表示自动定时发送；个位数设定打印方式，0表示仅打印统计信息，1表示打印数据内容
+8、autoSendTime:自动发送测试数据的时间间隔，单位是ms
+9、autoSendSize:自动发送的数据长度，单位是bit
+
+                     节点1                                                  节点2                                                   节点3                                                节点4
+                 APP层实体0  11400                                      APP层实体0 12400                                      APP层实体0  13400                                      APP层实体0 14400
+                 |                                                                  |                                                                 |                                                                  |                          
+                 NET层实体0  11300                                      NET层实体0 12300                                      NET层实体0  13300                                      NET层实体0 14300
+                 |                |                                                 |                |                                                |                |                                                 |                |          
+  PHY层实体1  11101   PHY层实体0 11100       PHY层实体0  12100   PHY层实体1 12101      PHY层实体01 13101   PHY层实体0 13100       PHY层实体0  14100   PHY层实体1 14101
+      |                                           |                                |                 |                                 |                               |                                     |                             |
+      |                                            ——————————                 ——————————                                ———————————                             |
+      ———————————————————————————————————————————————————————————————————
+
+
 ---------------------------------------------------------
 deviceID = 1
 	layer = PHY
@@ -18,18 +28,63 @@ deviceID = 1
 			localPort = 11100
 			errorProb = 20
 			bufferSize = 40000
-			apiMode = 1
+			layOut = 4
 			_lowerNumber = 0
 			_lowerParms = 0
 			_upperNumbers = 1
 			_upperParms = 3
 			upperIPAddr = 127.0.0.1
-			upperPort = 11400
+			upperPort = 11300
 			upperMode = 0
 			_peerNumbers = 1
 			_peerParms = 2
 			peerIPAddr = 127.0.0.1 
 			peerPort = 12100
+		-----------------------------
+		entityID = 1
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 11101
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 11300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 14101
+		-----------------------------
+	layer = NET
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 3
+			myPort = 11300
+			myAddr = 1
+			workMode = 1
+			_lowerNumber = 2
+			_lowerParms = 3
+			lowerIPAddr0 = 127.0.0.1
+			lowerPort0 = 11100
+			lowerMode0 = 0
+			lowerIPAddr1 = 127.0.0.1
+			lowerPort1 = 11101
+			lowerMode1 = 0
+			_upperNumbers = 1
+			_upperParms = 2
+			upperIPAddr = 127.0.0.1
+			upperPort = 11400
+			_peerNumbers = 2
+			_peerParms = 2
+			peerAddr0 = 2
+			Intf0 = 0
+			peerAddr1 = 4
+			Intf1 = 1
 		------------------------------
 	layer = APP
 		entityID = 0
@@ -37,11 +92,13 @@ deviceID = 1
 			_basicParms = 5
 			myPort = 11400
 			myAddr = 1
+			workMode = 1
+			autoSendTime = 10
+			autoSendSize = 4000
+			_lowerNumber = 1
+			_lowerParms = 2
 			lowerIPAddr = 127.0.0.1
-			lowerPort = 11100
-			apiMode = 1
-			_lowerNumber = 0
-			_lowerParms = 0
+			lowerPort = 11300
 			_upperNumbers = 0
 			_upperParms = 0
 			_peerNumbers = 0
@@ -55,29 +112,245 @@ deviceID = 2
 			localPort = 12100
 			errorProb = 20
 			bufferSize = 40000
-			apiMode = 1
+			layOut = 4
 			_lowerNumber = 0
 			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 12300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 11100
+		-----------------------------
+		entityID = 1
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 12101
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 12300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 13101
+		-----------------------------
+	layer = NET
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 3
+			myPort = 12300
+			myAddr = 2
+			workMode = 1
+			_lowerNumber = 2
+			_lowerParms = 3
+			lowerIPAddr0 = 127.0.0.1
+			lowerPort0 = 12100
+			lowerMode = 0
+			lowerIPAddr1 = 127.0.0.1
+			lowerPort1 = 12101
+			lowerMode = 0
 			_upperNumbers = 1
 			_upperParms = 2
 			upperIPAddr = 127.0.0.1
 			upperPort = 12400
-			_peerNumbers = 1
+			_peerNumbers = 2
 			_peerParms = 2
-			peerIPAddr = 127.0.0.1
-			peerPort = 11100
-		-----------------------------
+			peerAddr0 = 1
+			Intf0 = 0
+			peerAddr1 = 3
+			Intf1 = 1
+		------------------------------
 	layer = APP
 		entityID = 0
 			_basicNumber = 1
 			_basicParms = 5
 			myPort = 12400
 			myAddr = 2
+			workMode = 1
+			autoSendTime = 10
+			autoSendSize = 4000
+			_lowerNumber = 1
+			_lowerParms = 2
 			lowerIPAddr = 127.0.0.1
-			lowerPort = 12100
-			apiMode = 1
+			lowerPort = 12300
+			_upperNumbers = 0
+			_upperParms = 0
+			_peerNumbers = 0
+			_peerParms = 0
+----------------------------------------------------------
+deviceID = 3
+	layer = PHY
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 13100
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
 			_lowerNumber = 0
 			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 13300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 14100
+		-----------------------------
+		entityID = 1
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 13101
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 13300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 12101
+		-----------------------------
+	layer = NET
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 3
+			myPort = 13300
+			myAddr = 3
+			workMode = 1
+			_lowerNumber = 2
+			_lowerParms = 3
+			lowerIPAddr0 = 127.0.0.1
+			lowerPort0 = 13100
+			lowerMode0 = 0
+			lowerIPAddr1 = 127.0.0.1
+			lowerPort1 = 13101
+			lowerMode1 = 0
+			_upperNumbers = 1
+			_upperParms = 2
+			upperIPAddr = 127.0.0.1
+			upperPort = 13400
+			_peerNumbers = 2
+			_peerParms = 2
+			peerAddr0 = 4
+			Intf0 = 0
+			peerAddr1 = 2
+			Intf1 = 1
+		------------------------------
+	layer = APP
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 5
+			myPort = 13400
+			myAddr = 3
+			workMode = 1
+			autoSendTime = 10
+			autoSendSize = 4000
+			_lowerNumber = 1
+			_lowerParms = 2
+			lowerIPAddr = 127.0.0.1
+			lowerPort = 13300
+			_upperNumbers = 0
+			_upperParms = 0
+			_peerNumbers = 0
+			_peerParms = 0
+----------------------------------------------------------
+deviceID = 4
+	layer = PHY
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 14100
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 14300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 13100
+		-----------------------------
+		entityID = 1
+			_basicNumber = 1
+			_basicParms = 4
+			localPort = 14101
+			errorProb = 20
+			bufferSize = 40000
+			layOut = 4
+			_lowerNumber = 0
+			_lowerParms = 0
+			_upperNumbers = 1
+			_upperParms = 3
+			upperIPAddr = 127.0.0.1
+			upperPort = 14300
+			upperMode = 0
+			_peerNumbers = 1
+			_peerParms = 2
+			peerIPAddr = 127.0.0.1 
+			peerPort = 11101
+		-----------------------------
+	layer = NET
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 3
+			myPort = 14300
+			myAddr = 4
+			workMode = 1
+			_lowerNumber = 2
+			_lowerParms = 3
+			lowerIPAddr0 = 127.0.0.1
+			lowerPort0 = 14100
+			lowerMode0 = 0
+			lowerIPAddr1 = 127.0.0.1
+			lowerPort1 = 14101
+			lowerMode1 = 0
+			_upperNumbers = 1
+			_upperParms = 2
+			upperIPAddr = 127.0.0.1
+			upperPort = 14400
+			_peerNumbers = 2
+			_peerParms = 2
+			peerAddr0 = 3
+			Intf0 = 0
+			peerAddr1 = 1
+			Intf1 = 1
+		------------------------------
+	layer = APP
+		entityID = 0
+			_basicNumber = 1
+			_basicParms = 5
+			myPort = 14400
+			myAddr = 4
+			workMode = 1
+			autoSendTime = 10
+			autoSendSize = 4000
+			_lowerNumber = 1
+			_lowerParms = 2
+			lowerIPAddr = 127.0.0.1
+			lowerPort = 14300
 			_upperNumbers = 0
 			_upperParms = 0
 			_peerNumbers = 0

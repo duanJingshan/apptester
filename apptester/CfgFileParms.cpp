@@ -80,7 +80,7 @@ void* CCfgFileParms::getCfgParms(parms_set type)
 	}
 	return cfg;
 }
-int CCfgFileParms::getValueInt(int * dst,parms_set type, char* name, int index)
+int CCfgFileParms::getValueInt(int* dst, parms_set type, char* name, int index)
 {
 	int i;
 	string strTmp;
@@ -98,7 +98,7 @@ int CCfgFileParms::getValueInt(int * dst,parms_set type, char* name, int index)
 		retval = strlen(strTmp.c_str());
 		if (retval < strlen(name))
 			continue;
-		find = strTmp.find(name);
+		find = (int)strTmp.find(name);
 		if (find >= 0) {
 			*dst = cfg->entryArray[i].value;
 			return 0;
@@ -124,7 +124,7 @@ char* CCfgFileParms::getValueStr(parms_set type, char* name, int index)
 		retval = strlen(strTmp.c_str());
 		if (retval < strlen(name))
 			continue;
-		find = strTmp.find(name);
+		find = (int)strTmp.find(name);
 		if (find >= 0) {
 			return cfg->entryArray[i].cValue;
 		}
@@ -182,7 +182,7 @@ int CCfgFileParms::getAndCheckLine(ifstream& cfgFile, string& str)
 	getline(cfgFile, str);
 	if (cfgFile.eof())
 		return -1;
-	x = str.find("--------");
+	x = (int)str.find("--------");
 	if (x >= 0)
 		return -2;
 	return 0;
@@ -208,7 +208,7 @@ int CCfgFileParms::readArray(parms_set type, ifstream& cfgFile)
 		return -1;
 	}
 	//读相应的组，就算没有需要成组的参数，number=0和parms=0两行必须有
-	retval = strTmp.find(strNumber);
+	retval = (int)strTmp.find(strNumber);
 	if (retval == -1) {
 		return -1;
 	}
@@ -222,11 +222,11 @@ int CCfgFileParms::readArray(parms_set type, ifstream& cfgFile)
 		return -1;
 	}
 
-	retval = strTmp.find(strParms);
+	retval = (int)strTmp.find(strParms);
 	if (retval == -1) {
 		return -1;
 	}
-	pos = strTmp.find("=");
+	pos = (int)strTmp.find("=");
 	strInt = strTmp.substr(pos + 1, strTmp.length() - pos);
 	//每组有多少个参数
 	parms = atoi(strInt.c_str());
@@ -238,7 +238,7 @@ int CCfgFileParms::readArray(parms_set type, ifstream& cfgFile)
 			if (0 > getAndCheckLine(cfgFile, strTmp)) {
 				return -1;
 			}
-			pos = strTmp.find("=");
+			pos = (int)strTmp.find("=");
 			cfg->entryArray[i * parms + j].name = (char*)malloc(pos + 1);
 			myStrcpy(cfg->entryArray[i * parms + j].name, strTmp.substr(0, pos).c_str());
 			cfg->entryArray[i * parms + j].cValue = (char*)malloc(strTmp.length() - pos + 1);
@@ -271,11 +271,11 @@ int CCfgFileParms::read()
 	while ((!cfgFile.eof()) && (!deviceFind)) {
 		getline(cfgFile, strTmp);
 		//cfgFile >> strTmp;
-		retval = strTmp.find("deviceID");
+		retval = (int)strTmp.find("deviceID");
 		if (retval == -1) {
 			continue;
 		}
-		retval = strTmp.find(deviceID);
+		retval = (int)strTmp.find(deviceID);
 		if (retval == -1) {
 			continue;
 		}
@@ -290,16 +290,16 @@ int CCfgFileParms::read()
 	layerFind = 0;
 	while ((!cfgFile.eof()) && (!layerFind)) {
 		getline(cfgFile, strTmp);
-		retval = strTmp.find("deviceID");
+		retval = (int)strTmp.find("deviceID");
 		if (retval >= 0) {//都找到下一个设备去了，停止
 			break;
 		}
-		retval = strTmp.find("layer");
+		retval = (int)strTmp.find("layer");
 		if (retval == -1) {
 			//getline(cfgFile,strTmp);
 			continue;
 		}
-		retval = strTmp.find(layer);
+		retval = (int)strTmp.find(layer);
 		if (retval == -1) {
 			//getline(cfgFile,strTmp);
 			continue;
@@ -314,20 +314,20 @@ int CCfgFileParms::read()
 	entityFind = 0;
 	while ((!cfgFile.eof()) && (!entityFind)) {
 		getline(cfgFile, strTmp);
-		retval = strTmp.find("layer");
+		retval = (int)strTmp.find("layer");
 		if (retval >= 0) {//都找到下一层，停止
 			break;
 		}
-		retval = strTmp.find("deviceID");
+		retval = (int)strTmp.find("deviceID");
 		if (retval >= 0) {//都找到下一个设备了，停止
 			break;
 		}
-		retval = strTmp.find("entityID");
+		retval = (int)strTmp.find("entityID");
 		if (retval == -1) {
 			//getline(cfgFile,strTmp);
 			continue;
 		}
-		retval = strTmp.find(entityID);
+		retval = (int)strTmp.find(entityID);
 		if (retval == -1) {
 			//getline(cfgFile,strTmp);
 			continue;
@@ -410,10 +410,3 @@ CCfgFileParms::~CCfgFileParms()
 	//upper组
 	freeArray(PEER);
 }
-
-
-
-
-
-
-
