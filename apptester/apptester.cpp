@@ -220,8 +220,8 @@ int main(int argc, char* argv[])
 
 	if (argc == 4) {
 		s1 = argv[1];
-		s2 = "APP";
-		s3 = argv[2];
+		s2 = argv[2];
+		s3 = argv[3];
 	}
 	else if (argc == 3) {
 		s1 = argv[1];
